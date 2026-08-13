@@ -478,10 +478,22 @@ class U
     new_name = prompt("rename '#{e[:name]}' to: ")
     return if new_name.nil? || new_name.strip.empty?
 
-    dest = File.join(@dir, new_name.strip)
+    new_name = new_name.strip
+
+    # If the user didn't specify an extension and the original entry had one,
+    # keep the original extension instead of silently dropping it.
+    # (Only applies to files, not directories, and only when the typed name
+    # has no extension of its own.)
+    unless e[:dir]
+      old_ext = File.extname(e[:name])
+      new_ext = File.extname(new_name)
+      new_name = "#{new_name}#{old_ext}" if new_ext.empty? && !old_ext.empty?
+    end
+
+    dest = File.join(@dir, new_name)
     begin
       FileUtils.mv(e[:full], dest)
-      set_message("renamed to #{new_name.strip}")
+      set_message("renamed to #{new_name}")
     rescue StandardError => ex
       set_message("error: #{ex.message}", :error)
     end
