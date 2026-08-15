@@ -1,6 +1,6 @@
 set -euo pipefail
 
-SOURCE_URL="https://raw.githubusercontent.com/ufuayk/u/main/u.rb"
+SOURCE_URL="https://raw.githubusercontent.com/ufuayk/u/macos/u.rb"
 INSTALL_NAME="u"
 
 info()  { printf "\033[34m==>\033[0m %s\n" "$1"; }
