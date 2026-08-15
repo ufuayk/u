@@ -37,7 +37,7 @@ Ruby is *not* preinstalled by default on most Linux distributions — if you're 
 **Quick install (recommended):**
  
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ufuayk/u/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ufuayk/u/macos/install.sh | bash
 ```
  
 This downloads `u.rb` and installs it on your `PATH` as `u` (falls back to `~/.local/bin` if you don't have write access to `/usr/local/bin` or `sudo`).
