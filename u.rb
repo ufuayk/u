@@ -30,8 +30,8 @@ module Color
   BRIGHT_YELLOW  = ENABLED ? "\e[93m"  : ''
   BRIGHT_MAGENTA = ENABLED ? "\e[95m"  : ''
   BRIGHT_RED     = ENABLED ? "\e[91m"  : ''
-  ORANGE         = ENABLED ? "\e[38;5;208m" : '' # 256-color orange (Rust)
-  LIGHT_BLUE     = ENABLED ? "\e[38;5;117m" : '' # 256-color light/sky blue (C/C++)
+  ORANGE         = ENABLED ? "\e[38;5;208m" : ''
+  LIGHT_BLUE     = ENABLED ? "\e[38;5;117m" : ''
 
   def self.wrap(code, text)
     ENABLED ? "#{code}#{text}#{RESET}" : text
@@ -39,7 +39,6 @@ module Color
 end
 
 module ZipPeek
-  # Returns an array of {name:, size:, dir:} or raises on malformed input.
   def self.list(path)
     data = File.binread(path)
     eocd_sig = "\x50\x4b\x05\x06"
@@ -93,7 +92,6 @@ module TarGzPeek
 
         entries << { name: name, size: size, dir: is_dir }
 
-        # skip file content, padded to 512-byte boundary
         padded = (size + 511) / 512 * 512
         gz.read(padded) if padded.positive?
       end
@@ -103,7 +101,7 @@ module TarGzPeek
 end
 
 class U
-  QUIT_KEYS = ['q', 'Q', "\u0003", "\u0004"].freeze # q, Q, Ctrl-C, Ctrl-D
+  QUIT_KEYS = ['q', 'Q', "\u0003", "\u0004"].freeze
   HELP_KEYS = ['u', '?'].freeze
   TEXT_EXTENSIONS = %w[
     .txt .md .markdown .rb .py .js .ts .jsx .tsx .json .yml .yaml .toml
@@ -165,8 +163,8 @@ class U
   def setup_screen
     @stty_save = `stty -g 2>/dev/null`.strip
     system('stty raw -echo isig 2>/dev/null')
-    print "\e[?1049h" # alternate screen buffer
-    print "\e[?25l"   # hide cursor
+    print "\e[?1049h"
+    print "\e[?25l"
     force_terminal_size if @resize
   end
 
@@ -177,8 +175,8 @@ class U
   end
 
   def teardown_screen
-    print "\e[?25h"   # show cursor
-    print "\e[?1049l" # leave alternate screen
+    print "\e[?25h"
+    print "\e[?1049l"
     if @stty_save && !@stty_save.empty?
       system("stty #{@stty_save} 2>/dev/null")
     else
@@ -342,7 +340,7 @@ class U
       @dir = e[:full]
       reload
     else
-      system('open', e[:full], out: File::NULL, err: File::NULL)
+      system('xdg-open', e[:full], out: File::NULL, err: File::NULL)
       set_message("opened #{e[:name]}")
     end
   end
@@ -449,7 +447,7 @@ class U
     end
 
     if mode == :cut
-      @clipboard = { mode: nil, paths: [] } # cut is a one-shot move
+      @clipboard = { mode: nil, paths: [] }
     end
 
     set_message("pasted #{ok} item(s)") if @message.nil? || ok.positive?
@@ -480,10 +478,6 @@ class U
 
     new_name = new_name.strip
 
-    # If the user didn't specify an extension and the original entry had one,
-    # keep the original extension instead of silently dropping it.
-    # (Only applies to files, not directories, and only when the typed name
-    # has no extension of its own.)
     unless e[:dir]
       old_ext = File.extname(e[:name])
       new_ext = File.extname(new_name)
@@ -662,7 +656,7 @@ class U
       return
     end
 
-    list_height = rows - 4 # title + path + separator + status
+    list_height = rows - 4
 
     preview_on = @show_preview && cols >= 60
     list_width = preview_on ? (cols / 2) : cols
@@ -746,7 +740,6 @@ class U
     @message = nil
   end
 
-  # Full-screen help overlay
   def draw_help(rows, cols)
     sections = [
       ['NAVIGATION', [
@@ -785,8 +778,8 @@ class U
     box_width = [box_width, cols - 2].min
     left_x = [(cols - box_width) / 2, 0].max
 
-    content_width = box_width - 2   # space between the left and right border chars
-    inner_width = content_width - 4 # minus 2-space paddingg
+    content_width = box_width - 2
+    inner_width = content_width - 4
 
     num_cols = box_width >= 100 ? 2 : 1
     col_gap = num_cols > 1 ? 2 : 0
